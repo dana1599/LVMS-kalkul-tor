@@ -1,0 +1,212 @@
+<html lang="hu"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LVMS - Kalkulátor</title>
+    <style>
+        body{
+            font-family: "Roboto", serif;
+            background: #424549;
+            color: #dddddd; 
+        }
+        table { 
+            width: 100%;
+            border-collapse: collapse;
+            background: #36393e;
+        }
+        th, td {
+            padding: 8px; 
+            text-align: left; 
+            border: 1px solid #424549; 
+        }
+        td input{
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            vertical-align: middle;
+            border: 0px;
+            background: #1e2124;
+            color: #e3e3e3;
+        }
+        td input:disabled{
+            background: #36393e;
+            font-size: 20px;
+        }
+        td#ar{
+            font-weight: bold;
+        }
+        td#nev{
+            font-weight: 400;
+            
+        }
+        .selected { 
+            background-color: #2aa147; 
+            color: #ffffff;
+        }
+        #selectedServices{
+            cursor: pointer;
+            background-color: #1e2124;
+            height: 50px;
+            width: 400px;
+            vertical-align: middle;
+            text-align: center;
+
+        }
+        #selectedServicesPrices{
+            background-color: #1e2124;
+            height: 30px;
+            width: 150px;
+            padding: 20px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #mikor {
+            font-size: 13px;
+            padding-left: 10px;
+            font-style: italic;
+            color: #dadada;
+        };
+    </style>
+<style type="text/css" id="operaUserStyle"></style><style type="text/css"></style></head>
+<body>
+
+    <center><h1>LVMS kalkulátor</h1>
+    <table id="servicesTable">
+        <thead>
+            <tr>
+                <th>Név</th>
+                <th>Ár</th>
+                <th>Mennyiség</th>
+            </tr>
+        </thead>
+        <tbody id="servicesBody">
+            <!-- Szolgáltatások sora ide kerül -->
+        <tr><td id="nev">Végtag sérülés ellátása<span id="mikor">- Törött, zúzódott, horzsolt végtag ellátása esetén.</span></td><td id="ar">8.000 $</td><td><input type="number" min="1" max="4"> db</td></tr><tr><td id="nev">Gyógyszeres kezelés<span id="mikor">- Lidocain, adrenalin, illetve a tananyagban felsorolt gyógyszerek esetén, max 5 darab alkalmazható.</span></td><td id="ar">5.000 $</td><td><input type="number" min="1" max="5"> db</td></tr><tr><td id="nev">Általános egészségügyi ellátás<span id="mikor">- Animban lévő sérültnél, egyéb RP-nél.</span></td><td id="ar">10.000 $</td><td><input type="number" min="1" max="1" disabled=""> db</td></tr><tr><td id="nev">Sebészeti ellátás<span id="mikor">- Lőtt illetve vágott sérüléseknél.</span></td><td id="ar">9.000 $</td><td><input type="number" min="1" max="6"> db</td></tr><tr><td id="nev">Helyszíni ellátás<span id="mikor">- Mikor <b>KÓRHÁZon</b> kívül történik az ellátás.</span></td><td id="ar">6.000 $</td><td><input type="number" min="1" max="1" disabled=""> db</td></tr><tr><td id="nev">Betegszállítás<span id="mikor">- Mikor a sérültet a <b>KÓRHÁZba</b> szállítjuk be a helyszínről.</span></td><td id="ar">5.000 $</td><td><input type="number" min="1" max="1" disabled=""> db</td></tr><tr><td id="nev">Elsőbbségi hívás<span id="mikor">- Rendvédelmi szervek (LVMPD/SASD) kihív sürgősségi rádión (Piros rádió).</span></td><td id="ar">10.000 $</td><td><input type="number" min="1" max="1" disabled=""> db</td></tr><tr><td id="nev">Különleges mentés<span id="mikor">- MICA, helikopter, hajó, illetve bányán belül lévő ellátásnál.</span></td><td id="ar">10.000 $</td><td><input type="number" min="1" max="1" disabled=""> db</td></tr><tr><td id="nev">Szándékos FALS hívás<span id="mikor">- Mikor kiérkezel a helyszínre, de nem kérik az ellátást, csak nem mondják le.</span></td><td id="ar">25.000 $</td><td><input type="number" min="1" max="1" disabled=""> db</td></tr><tr><td id="nev">Egészségügyi alkalmassági vizsgálat (MEFE)<span id="mikor">- Taxi, IRS, SASD illetve Jesse, Redline, Seering alkalmassági vizsgálatra jön akkor kell adni</span></td><td id="ar">10.000 $</td><td><input type="number" min="1" max="1" disabled=""> db</td></tr></tbody>
+    </table>
+    <h3>Kiválasztott szolgáltatások:</h3>
+    <p id="selectedServices"></p>
+    <h3>Összesített ár:</h3>
+    <p id="selectedServicesPrices">0 $</p>
+
+    <script>
+        const szolgaltatasok = [
+            { short: "Végtag s.", nev: "Végtag sérülés ellátása",mikor: "Törött, zúzódott, horzsolt végtag ellátása esetén.", ar: 8000, min: 1, max: 4, disabled: false },
+            { short: "Gyógy. k.", nev: "Gyógyszeres kezelés",mikor: "Lidocain, adrenalin, illetve a tananyagban felsorolt gyógyszerek esetén, max 5 darab alkalmazható.", ar: 5000, min: 1, max: 5, disabled: false },
+            { short: "Ált. Eü. El.", nev: "Általános egészségügyi ellátás",mikor: "Animban lévő sérültnél, egyéb RP-nél.", ar: 10000, min: 1, max: 1, disabled: true },
+            { short: "Seb. el.", nev: "Sebészeti ellátás",mikor: "Lőtt illetve vágott sérüléseknél.", ar: 9000, min: 1, max: 6, disabled: false },
+            { short: "Hely. el.", nev: "Helyszíni ellátás",mikor: "Mikor <b>KÓRHÁZon</b> kívül történik az ellátás.", ar: 6000, min: 1, max: 1, disabled: true },
+            { short: "Betegsz.", nev: "Betegszállítás",mikor: "Mikor a sérültet a <b>KÓRHÁZba</b> szállítjuk be a helyszínről.", ar: 5000, min: 1, max: 1, disabled: true },
+            { short: "Elsőb.", nev: "Elsőbbségi hívás",mikor: "Rendvédelmi szervek (LVMPD/SASD) kihív sürgősségi rádión (Piros rádió).", ar: 10000, min: 1, max: 1, disabled: true },
+            { short: "Kül. men.", nev: "Különleges mentés",mikor: "MICA, helikopter, hajó, illetve bányán belül lévő ellátásnál.", ar: 10000, min: 1, max: 1, disabled: true },
+            { short: "FALS", nev: "Szándékos FALS hívás",mikor: "Mikor kiérkezel a helyszínre, de nem kérik az ellátást, csak nem mondják le.", ar: 25000, min: 1, max: 1, disabled: true },
+            { short: "MEFE [Megfelelt]", nev: "Egészségügyi alkalmassági vizsgálat (MEFE)",mikor: "Taxi, IRS, SASD illetve Jesse, Redline, Seering alkalmassági vizsgálatra jön akkor kell adni", ar: 10000, min: 1, max: 1, disabled: true }
+        ];
+        
+
+        const servicesBody = document.getElementById('servicesBody');
+        const selectedServices = document.getElementById('selectedServices');
+        const selectedServicesPrices = document.getElementById('selectedServicesPrices');
+
+
+        function formatNumberWithDots(number) {
+            return number.toLocaleString('de-DE'); // Német formátumot használ, ami pontot tesz ezres csoportokba
+        }
+
+
+        function renderTable() {
+            szolgaltatasok.forEach((service, index) => {
+                const row = document.createElement('tr');
+
+                // Sor kijelölési esemény kezelése, ellenőrzés input kattintásra
+                row.addEventListener('click', (event) => {
+                    if (event.target.tagName !== 'INPUT') {  // Csak akkor fut, ha nem az inputra kattintunk
+                        if (service.short === "Hely. el." && szolgaltatasok[5].selected) {
+                            // Ha a Helyszíni ellátás ki van jelölve, ne lehessen kijelölni a Betegszállítást
+                            return;
+                        }
+                        if (service.short === "Betegsz." && szolgaltatasok[4].selected) {
+                            // Ha a Betegszállítás ki van jelölve, ne lehessen kijelölni a Helyszíni ellátást
+                            return;
+                        }
+                        toggleSelectRow(row, index);
+                    }
+                });
+
+                const nameCell = document.createElement('td');
+                nameCell.textContent = service.nev;
+                nameCell.id = "nev";
+                const nameCellMikorSpan = document.createElement('span');
+                nameCellMikorSpan.innerHTML = "- " + service.mikor;
+                nameCellMikorSpan.id = "mikor";
+                nameCell.appendChild(nameCellMikorSpan);
+                row.appendChild(nameCell);
+
+                const priceCell = document.createElement('td');
+                priceCell.textContent = formatNumberWithDots(service.ar) + " $";
+                priceCell.id = "ar";
+                row.appendChild(priceCell);
+
+                const qtyCell = document.createElement('td');
+                const qtyInput = document.createElement('input');
+                qtyInput.type = 'number';
+                qtyInput.min = service.min;
+                qtyInput.max = service.max === 0 ? '' : service.max;
+                qtyInput.disabled = service.disabled;
+                qtyInput.value = service.min;
+                qtyInput.addEventListener('input', () => updateSelectedServices());
+                qtyCell.appendChild(qtyInput);
+
+                const darabText = document.createTextNode(" db");
+                qtyCell.appendChild(darabText);
+                row.appendChild(qtyCell);
+
+                servicesBody.appendChild(row);
+            });
+        }
+
+        function toggleSelectRow(row, index) {
+            row.classList.toggle('selected');
+            szolgaltatasok[index].selected = row.classList.contains('selected');
+            updateSelectedServices();
+        }
+
+        function updateSelectedServices() {
+            let totalPrice = 0;
+            const selected = szolgaltatasok
+                .map((service, index) => {
+                    const row = servicesBody.children[index];
+                    const qty = parseInt(row.querySelector('input').value, 10) || 0;
+                    if (service.selected && qty > 0) {
+                        totalPrice += service.ar * qty;
+                        if (qty > 1){
+                            return `${qty}x ${service.short}`;
+                        }else if (qty == 1){
+                            return `${service.short}`;
+                        }
+                    }
+                    return null;
+                })
+                .filter(item => item !== null);
+
+            selectedServices.textContent = selected.join(', ');
+            selectedServicesPrices.textContent = `${formatNumberWithDots(totalPrice)} $`;
+        }
+
+
+        renderTable();
+
+        document.getElementById('selectedServices').addEventListener('click', function() {
+            // Szöveg másolása a vágólapra
+            const textToCopy = this.textContent;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('Sikeres másolás: ' + textToCopy);
+            }).catch(err => {
+                console.error('Hiba a másolás során: ', err);
+            });
+        });
+
+    </script>
+</center>
+</body>
+</html>
